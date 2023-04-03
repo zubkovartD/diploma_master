@@ -200,18 +200,23 @@ class TransducerNonlin:
             
             
             
-    def show_Bl(self,xlim = [-10,10]):
-        
-        x = np.linspace(xlim[0],xlim[1],20)
+    def show_Bl(self, dc_shift, bl_res, xlim = [-10,10]):
+
+        x = np.linspace(xlim[0], xlim[1], 20)
         Bl_x = np.polyval(self.Bl_x, x)
-        
+
         plt.figure()
-        plt.plot(x,Bl_x)
+
+        plt.scatter(x, Bl_x, s=100, alpha=0.5, facecolors='none', edgecolors='b', label='bl_x')
+
+        plt.plot(dc_shift, bl_res, 'r', label='dc_shift vs. bl')
+
         plt.grid()
         plt.xlabel('Membrane displacement, m')
         plt.ylabel('Bl, N/A')
         plt.title('Nonlinear force factor Bl')
-        
+        plt.legend()
+        plt.show()
         
         
     def show_Cms(self,xlim = [-10,10], Kms = False):

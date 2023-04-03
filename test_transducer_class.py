@@ -16,14 +16,6 @@ from transducer_class import TransducerNonlin,Transducer
 
 import elitism
 
-# 1. Generate input signals with different dc_shift (from -1 to 1, in steps of 0.1 to begin with) - sig in the code
-# 2. Run them through the model and find the offsets and current (disp and curr in the code)
-# 3. Find their spectra
-# 4. Feed the spectra into the genetic algorithm
-# 5. As a result, you should have sets of linear parameters for each dc_shift
-# 6. Build BL dependency on dc_shift
-
-
 fs = 48000 #Sampling frequency
 
 T = 1 #Signal duration
@@ -49,7 +41,7 @@ R_ms_meas = 0.65  # kg/s
 
 f_res_meas = 1/(2*math.pi*math.sqrt(M_ms_meas/K_ms_meas))
 
-trans = TransducerNonlin(R_e_meas, [L_e_meas], [Bl_meas], M_ms_meas, [C_ms_meas], R_ms_meas, fs, stateless = True) #Create transducer object
+trans = TransducerNonlin(R_e_meas, [L_e_meas], [0.0013400, -0.0070605, -0.064718, 0.022497, 2.5193], M_ms_meas, [C_ms_meas], R_ms_meas, fs, stateless = True) #Create transducer object
 
 spectra = []
 dc_shift_arr = []
@@ -198,71 +190,71 @@ for dc_shift in np.arange(-1, 1.1, 0.1):
     
     bl_gen_arr.append(best[1])
     best_ind_arr.append(best)
-    # f_res = 139.4
-    # R_e = 3.54
+    f_res = 139.4
+    R_e = 3.54
 
-    # L_e = best[0] * 1e-4
-    # Bl = best[1]
-    # M_ms = best[2]*1e-3
-    # R_ms = best[3] * 1e-1
+    L_e = best[0] * 1e-4
+    Bl = best[1]
+    M_ms = best[2]*1e-3
+    R_ms = best[3] * 1e-1
 
 
-    # K_ms = M_ms*(f_res*2*math.pi)**2
+    K_ms = M_ms*(f_res*2*math.pi)**2
         
-    # Z_tot_gen = R_e + jw * L_e + Bl ** 2 / (jw * M_ms + K_ms / jw + R_ms) # Genetically derived total input impedance
+    Z_tot_gen = R_e + jw * L_e + Bl ** 2 / (jw * M_ms + K_ms / jw + R_ms) # Genetically derived total input impedance
 
-    # f_res_gen = 1/(2*math.pi*math.sqrt(M_ms/K_ms))
+    f_res_gen = 1/(2*math.pi*math.sqrt(M_ms/K_ms))
 
-    # print('f_res_meas = ',f_res_meas)
-    # print('f_res_gen = ',f_res_gen)
+    print('f_res_meas = ',f_res_meas)
+    print('f_res_gen = ',f_res_gen)
 
-    # # extract statistics:
-    # minFitnessValues, meanFitnessValues = logbook.select("min", "avg")
+    # extract statistics:
+    minFitnessValues, meanFitnessValues = logbook.select("min", "avg")
 
-    # plt.rc('font', size=20) 
-    # # Statistics
-    # sns.set_style("whitegrid")
-    # plt.figure(figsize=(8, 6), dpi=80)
-    # plt.plot(minFitnessValues, color='red')
-    # plt.plot(meanFitnessValues, color='green')
-    # plt.xlabel('Generation')
-    # plt.ylabel('Min / Average Fitness')
-    # plt.title('Min and Average fitness over Generations')
-    # plt.xlim([0,25])
-    # plt.ylim([-2,12])
-    # plt.show()
+    plt.rc('font', size=20) 
+    # Statistics
+    sns.set_style("whitegrid")
+    plt.figure(figsize=(8, 6), dpi=80)
+    plt.plot(minFitnessValues, color='red')
+    plt.plot(meanFitnessValues, color='green')
+    plt.xlabel('Generation')
+    plt.ylabel('Min / Average Fitness')
+    plt.title('Min and Average fitness over Generations')
+    plt.xlim([0,25])
+    plt.ylim([-2,12])
+    plt.show()
 
-    # # Magnitude
-    # plt.figure(figsize=(8, 6.5), dpi=80)
-    # plt.grid()
-    # plt.title('Input electrical impedance (Magnitude)')
-    # plt.xscale('log')
-    # plt.grid()
+    # Magnitude
+    plt.figure(figsize=(8, 6.5), dpi=80)
+    plt.grid()
+    plt.title('Input electrical impedance (Magnitude)')
+    plt.xscale('log')
+    plt.grid()
 
-    # plt.xlabel('Frequency, Hz')
-    # plt.ylabel('Magnituge, Ohm')
-    # plt.plot(f, abs(Z_tot_mod), label="State-space model")
-    # plt.plot(f, abs(Z_tot_meas), label="Added mass")
-    # plt.plot(f, abs(Z_tot_gen), label="Genetic")
+    plt.xlabel('Frequency, Hz')
+    plt.ylabel('Magnituge, Ohm')
+    plt.plot(f, abs(Z_tot_mod), label="State-space model")
+    plt.plot(f, abs(Z_tot_meas), label="Added mass")
+    plt.plot(f, abs(Z_tot_gen), label="Genetic")
 
-    # plt.legend()
-    # plt.show()
+    plt.legend()
+    plt.show()
 
-    # # Phase
-    # plt.figure(figsize=(8, 6.5), dpi=80)
-    # plt.grid()
-    # plt.title('Input electrical impedance (Phase)')
-    # plt.xscale('log')
-    # plt.grid()
+    # Phase
+    plt.figure(figsize=(8, 6.5), dpi=80)
+    plt.grid()
+    plt.title('Input electrical impedance (Phase)')
+    plt.xscale('log')
+    plt.grid()
 
-    # plt.xlabel('Frequency, Hz')
-    # plt.ylabel('Phase, rad')
-    # plt.plot(f, np.angle(Z_tot_mod), label="State-space model")
-    # plt.plot(f, np.angle(Z_tot_meas), label="Added mass")
-    # plt.plot(f, np.angle(Z_tot_gen), label="Genetic")
+    plt.xlabel('Frequency, Hz')
+    plt.ylabel('Phase, rad')
+    plt.plot(f, np.angle(Z_tot_mod), label="State-space model")
+    plt.plot(f, np.angle(Z_tot_meas), label="Added mass")
+    plt.plot(f, np.angle(Z_tot_gen), label="Genetic")
 
-    # plt.legend()
-    # plt.show()
+    plt.legend()
+    plt.show()
     dc_shift_arr_result_params.append(result_params)
 
 for i in range(len(dc_shift_arr)):
@@ -293,7 +285,6 @@ for i in range(len(dc_shift_arr_result_params)):
 plt.figure(figsize=(8, 6.5), dpi=80)
 plt.grid()
 plt.title('BL to dc_shift ratio')
-plt.xscale('log')
 plt.grid()
 
 plt.xlabel('dc_shift')
@@ -303,7 +294,5 @@ plt.plot(dc_shift_arr, bl_gen_arr , label="Measured")
 
 plt.legend()
 plt.show()
-#Show the best individual for each dc_shift in table
 
-
-# %%
+trans.show_Bl(dc_shift_arr, bl_gen_arr, xlim = [-3,3]) 
