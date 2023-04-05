@@ -43,6 +43,17 @@ f_res_meas = 1/(2*math.pi*math.sqrt(M_ms_meas/K_ms_meas))
 
 trans = TransducerNonlin(R_e_meas, [L_e_meas], [0.0013400, -0.0070605, -0.064718, 0.022497, 2.5193], M_ms_meas, [C_ms_meas], R_ms_meas, fs, stateless = True) #Create transducer object
 
+# зависимость амплитуды входного сигнала от времени, код рабочий, скидывал результат работы в ЛС
+# dc_shift_values = np.arange(0, 0.5, 0.1) 
+
+# for dc_shift in dc_shift_values:
+#     t = np.linspace(0, T, T*fs) #Time vector
+#     sig = A*chirp(t, f0=f0, f1=f1, t1=T, method='logarithmic', phi = phi) + dc_shift
+#     plt.plot(t, sig, label=f'dc_shift={dc_shift:.1f}') 
+
+# plt.legend()
+# plt.show()
+
 spectra = []
 dc_shift_arr = []
 bl_gen_arr = []
