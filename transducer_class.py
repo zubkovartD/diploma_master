@@ -114,6 +114,7 @@ class TransducerNonlin:
         
         self.fs = fs
         self.Ts = 1/self.fs
+        self.stateless = stateless
         
         ## Internal state vector
         
@@ -132,8 +133,8 @@ class TransducerNonlin:
         Le = np.polyval(self.Le_x, self.state[2])
         Le_prime = np.polyval(self.Le_x_prime, self.state[2])
         
-        return np.array([[           1-self.Ts*self.Re/Le,                         -self.Ts*(self.state[0]*Le_prime + Bl)/Le,                     0],
-                         [self.Ts*(Bl+self.state[0]*0.5*Le_prime)/self.Mms,               1-self.Ts*self.Rms/self.Mms,                -self.Ts/(Cms*self.Mms)],
+        return np.array([[           1-self.Ts*self.Re/Le,                         -1*self.Ts*(self.state[0]*Le_prime + Bl)/Le,                     0],
+                         [self.Ts*(Bl+self.state[0]*0.5*Le_prime)/self.Mms,               1-self.Ts*self.Rms/self.Mms,                -self.Ts/(self.Cms_x*self.Mms)],
                          [                  0,                                                     self.Ts,                                       1]])
     
     def get_input_matrix(self):
@@ -181,9 +182,10 @@ class TransducerNonlin:
             return resp[:,2]
         
         elif responce == 'training_data':
-            resp[:,1] = resp[:,0].copy()
-            resp[:,2] = resp[:,2].copy()
-            resp[:,0] = signal.copy()
+            respp = np.zeros([len(signal),3])
+            respp[:,1] = resp[:,0].copy()
+            respp[:,2] = resp[:,2].copy()
+            respp[:,0] = signal.copy()
             return resp
         
         elif responce == None:
@@ -194,29 +196,31 @@ class TransducerNonlin:
         else:
             print('Choose available loudspeaker response')
         
-        if stateless:
+        if self.stateless:
             
             self.reset_states()
             
             
             
-    def show_Bl(self, dc_shift, bl_res, xlim = [-10,10]):
-
+    def show_Bl(self,xlim = [-10,10], dc_arr=None, bl_arr=None):
         x = np.linspace(xlim[0], xlim[1], 20)
         Bl_x = np.polyval(self.Bl_x, x)
-
+        print(Bl_x)
+        print(x)
         plt.figure()
-
-        plt.scatter(x, Bl_x, s=100, alpha=0.5, facecolors='none', edgecolors='b', label='bl_x')
-
-        plt.plot(dc_shift, bl_res, 'r', label='dc_shift vs. bl')
-
-        plt.grid()
+        plt.plot(x, Bl_x)
         plt.xlabel('Membrane displacement, m')
         plt.ylabel('Bl, N/A')
         plt.title('Nonlinear force factor Bl')
-        plt.legend()
-        plt.show()
+
+        if dc_arr is not None and bl_arr is not None:
+            plt.plot(dc_arr, bl_arr, color = 'green')
+            plt.legend(['Bl', 'dc vs bl'])
+        else:
+            plt.legend(['Bl'])
+
+        plt.grid()
+        plt.show()   
         
         
     def show_Cms(self,xlim = [-10,10], Kms = False):
@@ -256,3 +260,7 @@ class TransducerNonlin:
     def reset_states(self):
         
         self.state = [0,0,0]
+
+    
+    
+
